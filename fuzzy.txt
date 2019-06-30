@@ -1,0 +1,79 @@
+xPipes   = ctrl.Antecedent(np.arange(-60, 632, 1), 'xPipes')     # avalia a posição x dos pipes
+    yPipeUp  = ctrl.Antecedent(np.arange(100, 300, 1), 'yPipeUp')  # avalia a posição y do pipe de cima
+    yPipeLw  = ctrl.Antecedent(np.arange(150, 350, 1), 'yPipeLw')    # avalia a posição y do pipe de baixo
+    yBird    = ctrl.Antecedent(np.arange(0, 385, 1), 'yBird')        # avalia a posição y do pássaro
+    bFlappy  = ctrl.Consequent(np.arange(0, 1, 0.01), 'bFlappy')     # avalia se o pássaro deve pular
+    
+    """ Avalia a posição y do pássaro de acordo com os valores 'alto' e 'baixo' """
+    yBird['alto']  = fuzz.trimf(yBird.universe, [0, 52, 105])        # o player pode estar no y alto
+    yBird['meio']  = fuzz.trimf(yBird.universe, [100, 175, 250])        # o player pode estar no y medio
+    yBird['baixo'] = fuzz.trimf(yBird.universe, [245, 312, 385])     # ou no y baixo
+    # plt.show(yBird.view())
+    
+    """ Avalia a posição x do pipe de acordo com os valores 'longe', 'perto' e 'passou' """
+    xPipes['passou'] = fuzz.trimf(xPipes.universe, [-60, 40, 45])
+    xPipes['perto']  = fuzz.trimf(xPipes.universe, [40, 55, 80])
+    xPipes['longe']  = fuzz.trimf(xPipes.universe, [75, 252, 632])
+    # plt.show(xPipes.view())
+
+    """ Avalia a posição y do pipe de acordo com os valores 'alto' e 'baixo' """
+    yPipeUp['baixo'] = fuzz.trimf(yPipeLw.universe, [100, 150, 220])
+    yPipeUp['alto']  = fuzz.trimf(yPipeLw.universe, [215, 255, 300])
+    # plt.show(yPipeLw.view())
+
+    """ Avalia a posição y do pipe de acordo com os valores 'alto' e 'baixo' """
+    yPipeLw['baixo'] = fuzz.trimf(yPipeLw.universe, [150, 158, 175])
+    yPipeLw['alto']  = fuzz.trimf(yPipeLw.universe, [170, 190, 350])
+    # plt.show(yPipeLw.view())
+
+    """ Avalia se o pássaro írá pular ou não pular """
+    bFlappy['notFlappy'] = fuzz.trimf(bFlappy.universe, [0.0, 0.25, 0.5])
+    bFlappy['yesFlappy'] = fuzz.trimf(bFlappy.universe, [0.4, 0.7, 1.0])
+    # plt.show(bFlappy.view())
+
+    """ Regras do sistema """
+    rule1Not = ctrl.Rule(yBird['alto'] & xPipes['passou'] & yPipeLw['baixo'] & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule2Not = ctrl.Rule(yBird['alto'] & xPipes['passou'] & yPipeLw['baixo'] & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule3Not = ctrl.Rule(yBird['alto'] & xPipes['passou'] & yPipeLw['alto']  & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule4Not = ctrl.Rule(yBird['alto'] & xPipes['passou'] & yPipeLw['alto']  & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule5Not = ctrl.Rule(yBird['alto'] & xPipes['perto'] & yPipeLw['baixo'] & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule6Not = ctrl.Rule(yBird['alto'] & xPipes['perto'] & yPipeLw['baixo'] & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule7Not = ctrl.Rule(yBird['alto'] & xPipes['perto'] & yPipeLw['alto']  & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule8Not = ctrl.Rule(yBird['alto'] & xPipes['perto'] & yPipeLw['alto']  & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule9Not = ctrl.Rule(yBird['alto'] & xPipes['longe'] & yPipeLw['baixo'] & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule10Not = ctrl.Rule(yBird['alto'] & xPipes['longe'] & yPipeLw['baixo'] & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule11Not = ctrl.Rule(yBird['alto'] & xPipes['longe'] & yPipeLw['alto']  & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule12Not = ctrl.Rule(yBird['alto'] & xPipes['longe'] & yPipeLw['alto']  & yPipeUp['alto'],  bFlappy['notFlappy'])
+
+    rule13Not = ctrl.Rule(yBird['meio'] & xPipes['passou'] & yPipeLw['baixo'] & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule14Not = ctrl.Rule(yBird['meio'] & xPipes['passou'] & yPipeLw['baixo'] & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule15Not = ctrl.Rule(yBird['meio'] & xPipes['passou'] & yPipeLw['alto']  & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule16Not = ctrl.Rule(yBird['meio'] & xPipes['passou'] & yPipeLw['alto']  & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule17Not = ctrl.Rule(yBird['meio'] & xPipes['perto'] & yPipeLw['baixo'] & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule18Not = ctrl.Rule(yBird['meio'] & xPipes['perto'] & yPipeLw['baixo'] & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule19Yes = ctrl.Rule(yBird['meio'] & xPipes['perto'] & yPipeLw['alto']  & yPipeUp['baixo'], bFlappy['yesFlappy'])
+    rule20Not = ctrl.Rule(yBird['meio'] & xPipes['perto'] & yPipeLw['alto']  & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule21Not = ctrl.Rule(yBird['meio'] & xPipes['longe'] & yPipeLw['baixo'] & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule22Not = ctrl.Rule(yBird['meio'] & xPipes['longe'] & yPipeLw['baixo'] & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule23Not = ctrl.Rule(yBird['meio'] & xPipes['longe'] & yPipeLw['alto']  & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule24Not = ctrl.Rule(yBird['meio'] & xPipes['longe'] & yPipeLw['alto']  & yPipeUp['alto'],  bFlappy['notFlappy'])
+
+    rule25Not = ctrl.Rule(yBird['baixo'] & xPipes['passou'] & yPipeLw['baixo'] & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule26Not = ctrl.Rule(yBird['baixo'] & xPipes['passou'] & yPipeLw['baixo'] & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule27Not = ctrl.Rule(yBird['baixo'] & xPipes['passou'] & yPipeLw['alto']  & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule28Not = ctrl.Rule(yBird['baixo'] & xPipes['passou'] & yPipeLw['alto']  & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule29Not = ctrl.Rule(yBird['baixo'] & xPipes['perto'] & yPipeLw['baixo'] & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule30Not = ctrl.Rule(yBird['baixo'] & xPipes['perto'] & yPipeLw['baixo'] & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule31Not = ctrl.Rule(yBird['baixo'] & xPipes['perto'] & yPipeLw['alto']  & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule32Not = ctrl.Rule(yBird['baixo'] & xPipes['perto'] & yPipeLw['alto']  & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule33Not = ctrl.Rule(yBird['baixo'] & xPipes['longe'] & yPipeLw['baixo'] & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule34Not = ctrl.Rule(yBird['baixo'] & xPipes['longe'] & yPipeLw['baixo'] & yPipeUp['alto'],  bFlappy['notFlappy'])
+    rule35Not = ctrl.Rule(yBird['baixo'] & xPipes['longe'] & yPipeLw['alto']  & yPipeUp['baixo'], bFlappy['notFlappy'])
+    rule36Not = ctrl.Rule(yBird['baixo'] & xPipes['longe'] & yPipeLw['alto']  & yPipeUp['alto'],  bFlappy['notFlappy'])
+
+    flapping_ctrl = ctrl.ControlSystem([
+                    rule1Not, rule2Not, rule3Not, rule4Not, rule5Not, rule6Not, rule7Not, rule8Not, rule9Not, rule10Not,
+                    rule11Not, rule12Not, rule13Not, rule14Not, rule15Not, rule16Not, rule17Not, rule18Not, rule19Yes,
+                    rule20Not, rule21Not, rule22Not, rule23Not, rule24Not, rule25Not, rule26Not, rule27Not, rule28Not,
+                    rule29Not, rule30Not, rule31Not, rule32Not, rule33Not, rule34Not, rule35Not, rule36Not
+                    ])
